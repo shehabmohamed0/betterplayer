@@ -128,6 +128,17 @@ internal class BetterPlayer(
         this.key = key
         isInitialized = false
         val uri = Uri.parse(dataSource)
+        if (uri.scheme !in setOf("http", "https", "file", "asset", "content", "rtsp")) {
+            try {
+                drmSessionManager = null
+                exoPlayer?.setMediaSource(BetterPlayerMediaSources.resolve(context, uri))
+                exoPlayer?.prepare()
+                result.success(null)
+            } catch (error: Exception) {
+                result.error("media_source_error", error.message, null)
+            }
+            return
+        }
         var dataSourceFactory: DataSource.Factory?
         val userAgent = getUserAgent(headers)
         if (licenseUrl != null && licenseUrl.isNotEmpty()) {
@@ -237,7 +248,7 @@ internal class BetterPlayer(
             }
 
             setupMediaSession(context, textureEntry.id())?.let {
-                setMediaSessionToken(it.sessionCompatToken)
+                setMediaSessionToken(it.platformToken)
             }
         }
 

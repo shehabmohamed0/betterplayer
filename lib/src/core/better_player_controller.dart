@@ -262,7 +262,12 @@ class BetterPlayerController {
           .addAll(betterPlayerDataSource.subtitles!);
     }
 
-    if (_isDataSourceAsms(betterPlayerDataSource)) {
+    // A native format hint must not force an extra Dart manifest request when
+    // all Dart ASMS features are disabled. Native playback still handles HLS.
+    final useAsms = betterPlayerDataSource.useAsmsTracks == true ||
+        betterPlayerDataSource.useAsmsAudioTracks == true ||
+        betterPlayerDataSource.useAsmsSubtitles == true;
+    if (useAsms && _isDataSourceAsms(betterPlayerDataSource)) {
       _setupAsmsDataSource(betterPlayerDataSource).then((dynamic value) {
         _setupSubtitles();
       });
@@ -1277,15 +1282,23 @@ class BetterPlayerController {
   ///Dispose BetterPlayerController. When [forceDispose] parameter is true, then
   ///autoDispose parameter will be overridden and controller will be disposed
   ///(if it wasn't disposed before).
-  void dispose({bool forceDispose = false}) {
+  Future<void>? _disposeFuture;
+
+  Future<void> dispose({bool forceDispose = false}) {
     if (!betterPlayerConfiguration.autoDispose && !forceDispose) {
-      return;
+      return Future<void>.value();
     }
+    return _disposeFuture ??= _dispose();
+  }
+
+  Future<void> _dispose() async {
     if (!_disposed) {
+      _disposed = true;
+      Future<void>? videoDisposal;
       if (videoPlayerController != null) {
         videoPlayerController!.removeListener(_onFullScreenStateChanged);
         videoPlayerController!.removeListener(_onVideoPlayerChanged);
-        videoPlayerController!.dispose();
+        videoDisposal = videoPlayerController!.dispose();
       }
       _eventListeners.clear();
       _nextVideoTimer?.cancel();
@@ -1297,6 +1310,7 @@ class BetterPlayerController {
 
       ///Delete files async
       _tempFiles.forEach((file) => file.delete());
+      await videoDisposal;
     }
   }
 }
