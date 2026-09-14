@@ -1,3 +1,6 @@
+## Unreleased
+- Fixed: ASMS manifest loading so explicitly disabling tracks, audio tracks, and subtitles skips Dart-side manifest fetching.
+
 ## 1.18.0
 - Added: `setPlayerSubtitlesConfiguration` on `BetterPlayerController` to dynamically update subtitle styling at runtime (#1141).
 - Fixed: Prevented `NaN` and `Infinity` errors in progress bars and aspect ratio calculations when media duration or size is zero (#1157, #1044, #901, #884).
@@ -61,7 +64,6 @@
 - Added: `metadataReady` event to signal when all adaptive tracks and subtitles are fully parsed and available (#1370).
 - Fixed: Conditionally disabled `onDoubleTap` in player controls to eliminate the 300ms single-tap lag when no custom double-tap gesture is provided.
 - Fixed: Separated controls visibility timer (`controlsHideTime`) and transition animation duration (`controlsTransitionTime`) to prevent instantaneous hiding of controls.
-
 
 ## 1.10.0
 - Added: WebVTT metadata block parsing support for `NOTE`, `STYLE`, and `REGION` headers.
@@ -819,7 +821,3 @@
 
 ## 0.0.1
 * Initial release.
-
-
-
-

@@ -1,3 +1,6 @@
+## Unreleased
+- Added: Android custom Media3 `MediaSource` registration for app-owned native sources such as offline download caches.
+
 ## 1.6.1
 - Fixed: Resolved Android media notification tap intent via `packageManager.getLaunchIntentForPackage` by default and supported fully qualified `activityName` values (#1138).
 - Fixed: Supported `file://` URIs and proper bitmap bounds sampling when loading local notification images in `ImageWorker` (#883).
@@ -45,7 +48,6 @@
 ## 1.0.0
 * Updated: Extracted Android native code from the core package into a standalone federated plugin package (`better_player_android`).
 * Fixed: Added missing `result.success(null)` for `setMixWithOthers` method channel call.
-
 
 
 

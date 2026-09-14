@@ -148,6 +148,14 @@ class BetterPlayer(
         isInitialized = false
         isInitializedSent = false
         val uri = Uri.parse(dataSource)
+        val customMediaSource = BetterPlayerMediaSources.resolve(context, uri)
+        if (customMediaSource != null) {
+            drmSessionManager = null
+            setMediaSource(customMediaSource, overriddenDuration)
+            exoPlayer?.prepare()
+            BetterPlayerApi.log(1, "setDataSource: prepare() called")
+            return
+        }
         var dataSourceFactory: DataSource.Factory?
         val userAgent = getUserAgent(headers)
         if (licenseUrl != null && licenseUrl.isNotEmpty()) {
@@ -208,14 +216,18 @@ class BetterPlayer(
             dataSourceFactory = DefaultDataSource.Factory(context)
         }
         val mediaSource = buildMediaSource(uri, dataSourceFactory, formatHint, cacheKey, context)
+        setMediaSource(mediaSource, overriddenDuration)
+        exoPlayer?.prepare()
+        BetterPlayerApi.log(1, "setDataSource: prepare() called")
+    }
+
+    private fun setMediaSource(mediaSource: MediaSource, overriddenDuration: Long) {
         if (overriddenDuration != 0L) {
             val clippingMediaSource = ClippingMediaSource(mediaSource, 0, overriddenDuration * 1000)
             exoPlayer?.setMediaSource(clippingMediaSource)
         } else {
             exoPlayer?.setMediaSource(mediaSource)
         }
-        exoPlayer?.prepare()
-        BetterPlayerApi.log(1, "setDataSource: prepare() called")
     }
 
     @Keep

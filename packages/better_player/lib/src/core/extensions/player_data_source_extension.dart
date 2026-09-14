@@ -73,7 +73,8 @@ extension PlayerDataSourceExtension on BetterPlayerController {
     final setupFutures = <Future<dynamic>>[
       _setupDataSource(betterPlayerDataSource),
     ];
-    if (_isDataSourceAsms(betterPlayerDataSource)) {
+    if (_isDataSourceAsms(betterPlayerDataSource) &&
+        !_hasExplicitlyDisabledAsmsManifestLoading(betterPlayerDataSource)) {
       setupFutures.add(_setupAsmsDataSource(betterPlayerDataSource));
     }
     try {
@@ -146,10 +147,23 @@ extension PlayerDataSourceExtension on BetterPlayerController {
 
   ///Check if given [betterPlayerDataSource] is HLS / DASH-type data source.
   bool _isDataSourceAsms(PlayerDataSource betterPlayerDataSource) =>
-      (PlayerAsmsUtils().isDataSourceHls(betterPlayerDataSource.url) ||
+      PlayerAsmsUtils().isDataSourceHls(betterPlayerDataSource.url) ||
+      (_isDataSourceHls(betterPlayerDataSource.url) ||
           betterPlayerDataSource.videoFormat == VideoFormat.hls) ||
       (PlayerAsmsUtils().isDataSourceDash(betterPlayerDataSource.url) ||
-          betterPlayerDataSource.videoFormat == VideoFormat.dash);
+          (_isDataSourceDash(betterPlayerDataSource.url) ||
+              betterPlayerDataSource.videoFormat == VideoFormat.dash));
+
+  bool _isDataSourceHls(String url) => url.contains('m3u8');
+
+  bool _isDataSourceDash(String url) => url.contains('mpd');
+
+  bool _hasExplicitlyDisabledAsmsManifestLoading(
+    PlayerDataSource betterPlayerDataSource,
+  ) =>
+      betterPlayerDataSource.useAsmsTracks == false &&
+      betterPlayerDataSource.useAsmsAudioTracks == false &&
+      betterPlayerDataSource.useAsmsSubtitles == false;
 
   ///Configure HLS / DASH data source based on provided data source and configuration.
   ///This method configures tracks, subtitles and audio tracks from given
