@@ -469,7 +469,13 @@ abstract class BetterPlayerControlsState<T extends StatefulWidget>
 
   void _showMaterialBottomSheet(List<Widget> children) {
     showModalBottomSheet<void>(
-      backgroundColor: Colors.transparent,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(24),
+          topRight: Radius.circular(24),
+        ),
+      ),
       context: context,
       useRootNavigator:
           betterPlayerController?.betterPlayerConfiguration.useRootNavigator ??
@@ -479,31 +485,22 @@ abstract class BetterPlayerControlsState<T extends StatefulWidget>
           top: false,
           child: SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
-              decoration: BoxDecoration(
-                color: betterPlayerControlsConfiguration.overflowModalColor,
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(24),
-                  topRight: Radius.circular(24),
-                ),
-              ),
-              child: Column(
-                children: [
-                  Center(
-                    child: Container(
-                      width: 32,
-                      height: 4,
-                      margin: const EdgeInsets.only(bottom: 12, top: 4),
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade400,
-                        borderRadius: BorderRadius.circular(2),
-                      ),
+            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+            child: Column(
+              children: [
+                Center(
+                  child: Container(
+                    width: 32,
+                    height: 4,
+                    margin: const EdgeInsets.only(bottom: 12, top: 4),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade400,
+                      borderRadius: BorderRadius.circular(2),
                     ),
                   ),
-                  ...children,
-                ],
-              ),
+                ),
+                ...children,
+              ],
             ),
           ),
         );
